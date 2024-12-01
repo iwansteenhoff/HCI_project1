@@ -5,12 +5,12 @@ using UnityEngine;
 public class zoomingandscrolling : MonoBehaviour
 {
     private Vector3 dragOrigin;
-    public float zoomSpeed = 1.7f;
+    public float zoomSpeed = 10f;
     public float minZoom = 0.05f;
-    public float maxZoom = 1f;
+    public float maxZoom = 100f;
 
-    public float mapWidth = 10f;   // Map width in world units
-    public float mapHeight = 10f;  // Map height in world units
+    public float mapWidth = 1000f;   // Map width in world units
+    public float mapHeight = 1000f;  // Map height in world units
 
     // Update is called once per frame
     void Update()
