@@ -21,6 +21,7 @@ public class handle_json_file : MonoBehaviour
 
     public string jsonFilePath = "Assets/Data/simplified_coordinates_1.json";
     public Material countryMaterial;
+    public MenuArea menuArea;
 
     void Start()
     {
@@ -107,7 +108,9 @@ public class handle_json_file : MonoBehaviour
             // Add Collider for Interaction
             if (!polygonObject.GetComponent<CountrySelector>())
             {
-                polygonObject.AddComponent<CountrySelector>();
+                CountrySelector CountrySelector = polygonObject.AddComponent<CountrySelector>();
+                CountrySelector.menuArea = menuArea;
+
             }
         }
     }

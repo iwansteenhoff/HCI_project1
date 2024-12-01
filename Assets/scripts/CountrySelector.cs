@@ -7,6 +7,8 @@ public class CountrySelector : MonoBehaviour
 
     private Transform parentCountry;
 
+    public MenuArea menuArea; // Reference to the MenuArea script
+
     void Start()
     {
         parentCountry = transform.parent;
@@ -20,6 +22,7 @@ public class CountrySelector : MonoBehaviour
 
     void OnMouseEnter()
     {
+        if (menuArea != null && menuArea.isMouseOverMenu) return;
         // Highlight all child meshes
         MeshRenderer[] renderers = parentCountry.GetComponentsInChildren<MeshRenderer>();
         originalMaterials = new Material[renderers.Length];
@@ -32,6 +35,7 @@ public class CountrySelector : MonoBehaviour
 
     void OnMouseExit()
     {
+        if (menuArea != null && menuArea.isMouseOverMenu) return;
         // Revert all child meshes to their original material
         MeshRenderer[] renderers = parentCountry.GetComponentsInChildren<MeshRenderer>();
         for (int i = 0; i < renderers.Length; i++)
@@ -42,6 +46,7 @@ public class CountrySelector : MonoBehaviour
 
     void OnMouseDown()
     {
+        if (menuArea != null && menuArea.isMouseOverMenu) return;
         // Log the country name when it's clicked
         Debug.Log($"Selected Country: {gameObject.name}");
     }

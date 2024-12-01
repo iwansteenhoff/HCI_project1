@@ -12,9 +12,14 @@ public class zoomingandscrolling : MonoBehaviour
     public float mapWidth = 1000f;   // Map width in world units
     public float mapHeight = 1000f;  // Map height in world units
 
+    public MenuArea MenuArea;
+
     // Update is called once per frame
     void Update()
     {
+        // Only process input if the mouse is NOT over the panel
+        if (MenuArea != null && MenuArea.isMouseOverMenu) return;
+
         // On Mouse Down or Touch Start, store drag start point
         if (Input.GetMouseButtonDown(0))
         {
