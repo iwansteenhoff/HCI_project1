@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UI
+    uniqueID: 1087352463
+    locked: 0
+  - name: meshes
+    uniqueID: 2579746857
+    locked: 0
