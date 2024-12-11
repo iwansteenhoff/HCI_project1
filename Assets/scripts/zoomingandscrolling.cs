@@ -13,10 +13,20 @@ public class zoomingandscrolling : MonoBehaviour
     public float mapHeight = 1000f;  // Map height in world units
 
     public MenuArea MenuArea;
+    private TimelineSlider timelineSlider; // Reference to TimelineSlider
+
+    void Start()
+    {
+        // Find the TimelineSlider in the scene
+        timelineSlider = FindObjectOfType<TimelineSlider>();
+    }
 
     // Update is called once per frame
     void Update()
     {
+        // Disable map controls if the slider is active
+        if (timelineSlider != null && timelineSlider.isSliderActive) return;
+
         // Only process input if the mouse is NOT over the panel
         if (MenuArea != null && MenuArea.isMouseOverMenu) return;
 
@@ -33,12 +43,10 @@ public class zoomingandscrolling : MonoBehaviour
             Camera.main.transform.position += difference;
         }
 
-
         // For desktop: Mouse Scrollwheel Zoom
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         Camera.main.orthographicSize -= scroll * zoomSpeed;
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, minZoom, maxZoom);
-
 
         // Clamp the camera position after zooming
         ClampCameraPosition();
@@ -61,6 +69,4 @@ public class zoomingandscrolling : MonoBehaviour
 
         Camera.main.transform.position = clampedPosition;
     }
-
-
 }
