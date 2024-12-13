@@ -87,4 +87,3 @@ public class zoomingandscrolling1 : MonoBehaviour
         Camera.main.transform.position = clampedPosition;
     }
 }
-
