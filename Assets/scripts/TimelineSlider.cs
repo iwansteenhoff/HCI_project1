@@ -1,15 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro; // Include this for TMP_Text support
+using System.Collections.Generic;
 
 public class TimelineSlider : MonoBehaviour
 {
     public UnityEngine.UI.Slider timelineSlider; // Reference to the UI Slider
     public TMP_Text yearText;                    // Reference to the TextMeshPro UI Text element
     public bool isSliderActive;
+    public PandemicDatabase pandemicDatabase;
+    public WorldMap worldMap;
 
     void Start()
     {
+        pandemicDatabase = FindObjectOfType<PandemicDatabase>();
         // Set initial year display
         UpdateYear(timelineSlider.value);
 
@@ -21,6 +25,7 @@ public class TimelineSlider : MonoBehaviour
     {
         int year = Mathf.RoundToInt(value); // Ensure it's an integer
         yearText.text = "Year: " + year;
+        DisplayPandemicsForYear(year);
     }
 
     public int GetSelectedYear()
@@ -33,9 +38,65 @@ public class TimelineSlider : MonoBehaviour
             isSliderActive = true;
     }
     
-
     public void OnPointerUp()
     {
         isSliderActive = false;
+    }
+    void DisplayPandemicsForYear(int year)
+    {
+        // Retrieve the pandemics for the selected year
+        var pandemics = pandemicDatabase.GetPandemicsByYear(year);
+
+        // Reset all previously marked countries to unselected
+        worldMap.MarkAllCountriesNotselected();
+
+        if (pandemics.Count == 0)
+        {
+            Debug.Log("No pandemics found for year: " + year);
+        }
+        else
+        {
+            // Create a list of tuples (CountryName, PathogenType)
+            var countryPlagueList = new List<(string CountryName, string PathogenType)>();
+
+            foreach (var pandemic in pandemics)
+            {
+                // Extract the country/region(s), split by '&' if multiple are listed
+                string[] countries = pandemic.Country.Split('&');
+
+                foreach (var countryName in countries)
+                {
+                    countryPlagueList.Add((countryName.Trim(), pandemic.Pathogen)); // Add tuple to list
+                }
+            }
+
+            // Process the country-plague tuples
+            foreach (var (countryName, pathogenType) in countryPlagueList)
+            {
+                try
+                {
+                    // Attempt to parse the country name to the Country enum
+                    if (System.Enum.TryParse(countryName, out Country countryEnum))
+                    {
+                        // Mark the country as affected by the pandemic
+                        Debug.Log(pathogenType);
+                        worldMap.MarkPandemic(countryEnum, pathogenType);
+                    }
+                    else if (countryName == "World")
+                    {
+                        Debug.Log("Applying pandemic to the whole world.");
+                        worldMap.SetAllCountriesToPandemic(pathogenType);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Country '{countryName}' not recognized as a valid Country enum.");
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"Error processing country '{countryName}': {ex.Message}");
+                }
+            }
+        }
     }
 }

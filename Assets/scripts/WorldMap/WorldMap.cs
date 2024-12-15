@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using UnityEngine.EventSystems;
+using System.Linq;
 public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPointerDownHandler,IPointerUpHandler
 {
     ///<summary>
@@ -120,7 +121,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         }
         
     }
-
+    
     ///<summary>
     /// Select Country
     ///</summary>
@@ -206,6 +207,84 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
               Enum.TryParse(gsId,out colorGS);
               return colorGS;
     }
+    
+    public void MarkPandemic(Country country, string pathogenType)
+    {
+        int countryIndex = (int)country;
+
+        // Check if the country index exists within the transform's children
+        if (countryIndex >= 0 && countryIndex < transform.childCount)
+        {
+            Transform countryT = transform.GetChild(countryIndex);
+
+            // Set the color based on the pathogenType
+            Color pathogenColor = GetColorForPathogen(pathogenType);
+
+            // Set the color of the country
+            countryT.GetComponent<SpriteRenderer>().color = pathogenColor;
+
+            // Set the tag to the pathogen name
+            countryT.tag = pathogenType;
+        }
+        else
+        {
+            Debug.LogError($"Country '{country}' does not exist. Invalid index: {countryIndex}. Ensure it exists in the hierarchy.");
+        }
+    }
+
+    public void MarkNotSelected(Country country)
+    {
+        int countryIndex = (int)country;
+
+        // Check if the country index exists within the transform's children
+        if (countryIndex >= 0 && countryIndex < transform.childCount)
+        {
+            Transform countryT = transform.GetChild(countryIndex);
+            countryT.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForCountries;
+            countryT.tag = "Not Selected";
+        }
+        else
+        {
+            Debug.LogError($"Country '{country}' does not exist. Invalid index: {countryIndex}. Ensure it exists in the hierarchy.");
+        }
+    }
+
+    
+    public void MarkAllCountriesNotselected()
+    {
+        string[] virusTags = new string[] { "Smallpox", "Bubonic plague", "Yellow fever", "Typhus", "Cholera", "Malaria",
+                                    "Measles", "African trypanosomiasis", "Kuru", "Influenza", "HIV", "SARS",
+                                    "Dengue fever", "Meningitis", "MERS-CoV", "Ebola", "COVID-19" };
+        selectedCountries.Clear();
+        for (int x = 0; x < transform.childCount; x++)
+        {
+            Debug.Log(transform.GetChild(x).tag);
+            if (virusTags.Contains(transform.GetChild(x).tag))
+            {
+                transform.GetChild(x).GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForCountries;
+                transform.GetChild(x).tag = "Not Selected";
+            }
+        }
+        highlightedCountry = Country.Empty;
+        selectedCountry = Country.Empty;
+    }
+
+    public void SetAllCountriesToPandemic(string pathogenType)
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform countryT = transform.GetChild(i);
+
+            // Set the tag to "Pandemic"
+            
+
+            // Set the color based on the pathogen type
+            Color pathogenColor = GetColorForPathogen(pathogenType);
+            countryT.GetComponent<SpriteRenderer>().color = pathogenColor;
+            countryT.tag = pathogenType;
+        }
+    }
+
     void SelectCountry()
     {
         ColorsGS grayScale = GetGSid();
@@ -244,7 +323,49 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                 onHighlightCountry(this,EventArgs.Empty);
             }
     }
-    
+    private Color GetColorForPathogen(string pathogenType)
+    {
+        // Replace with your actual color mappings for each pathogen
+        switch (pathogenType)
+        {
+            case "Smallpox":
+                return mapStyleController.DefaultColorForSmallpox;
+            case "Bubonic plague":
+                return mapStyleController.DefaultColorForBubonicPlague;
+            case "Yellow fever":
+                return mapStyleController.DefaultColorForYellowFever;
+            case "Typhus":
+                return mapStyleController.DefaultColorForTyphus;
+            case "Cholera":
+                return mapStyleController.DefaultColorForCholera;
+            case "Malaria":
+                return mapStyleController.DefaultColorForMalaria;
+            case "Measles":
+                return mapStyleController.DefaultColorForMeasles;
+            case "African trypanosomiasis":
+                return mapStyleController.DefaultColorForAfricanTrypanosomiasis;
+            case "Kuru":
+                return mapStyleController.DefaultColorForKuru;
+            case "Influenza":
+                return mapStyleController.DefaultColorForInfluenza;
+            case "HIV":
+                return mapStyleController.DefaultColorForHIV;
+            case "SARS":
+                return mapStyleController.DefaultColorForSARS;
+            case "Dengue fever":
+                return mapStyleController.DefaultColorForDengueFever;
+            case "Meningitis":
+                return mapStyleController.DefaultColorForMeningitis;
+            case "MERS-CoV":
+                return mapStyleController.DefaultColorForMERSCoV;
+            case "Ebola":
+                return mapStyleController.DefaultColorForEbola;
+            case "COVID-19":
+                return mapStyleController.DefaultColorForCOVID19;
+            default:
+                return mapStyleController.DefaultColorForPandemicCountries; // Default color if pathogen is unrecognized
+        }
+    }
 }
 public enum Country
 {

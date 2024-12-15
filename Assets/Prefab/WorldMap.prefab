@@ -7460,6 +7460,24 @@ MonoBehaviour:
   DefaultColorForHighlightedCountries: {r: 1, g: 0, b: 0, a: 1}
   DefaultColorForSelectedCountries: {r: 1, g: 0, b: 0, a: 1}
   DefaultColorForNonIntractableCountries: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
+  DefaultColorForPandemicCountries: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForSmallpox: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForBubonicPlague: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForYellowFever: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForTyphus: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForCholera: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForMalaria: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForMeasles: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForAfricanTrypanosomiasis: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForKuru: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForInfluenza: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForHIV: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForSARS: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForDengueFever: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForMeningitis: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForMERSCoV: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForEbola: {r: 0, g: 0, b: 0, a: 0}
+  DefaultColorForCOVID19: {r: 0, g: 0, b: 0, a: 0}
   ShowCountryNames: 0
   FontColor: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
   StrokeColor:

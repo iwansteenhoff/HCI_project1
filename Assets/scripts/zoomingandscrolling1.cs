@@ -27,8 +27,11 @@ public class zoomingandscrolling1 : MonoBehaviour
         // Disable map controls if the slider is active
         if (timelineSlider != null && timelineSlider.isSliderActive) return;
 
-        // Only process input if the mouse is NOT over the panel
+        // Only process input if the mouse is NOT over the menu panel
         if (MenuArea != null && MenuArea.isMouseOverMenu) return;
+
+        // Stop zooming and scrolling if interacting with any UI element (including slider)
+        if (IsPointerOverSlider()) return;
 
         // On Mouse Down or Touch Start, store drag start point
         if (Input.GetMouseButtonDown(0))
@@ -85,5 +88,23 @@ public class zoomingandscrolling1 : MonoBehaviour
         clampedPosition.y = Mathf.Clamp(clampedPosition.y, minY, maxY);
 
         Camera.main.transform.position = clampedPosition;
+    }
+
+    // Helper method to check if the mouse is over the timeline slider
+    private bool IsPointerOverSlider()
+    {
+        if (timelineSlider == null) return false;
+
+        // Check if the mouse is over the slider RectTransform
+        RectTransform sliderRect = timelineSlider.timelineSlider.GetComponent<RectTransform>();
+        Vector2 localMousePosition = Vector2.zero;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            sliderRect, Input.mousePosition, Camera.main, out localMousePosition))
+        {
+            return sliderRect.rect.Contains(localMousePosition);
+        }
+
+        return false;
     }
 }

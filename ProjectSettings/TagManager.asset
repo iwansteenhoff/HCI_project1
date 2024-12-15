@@ -3,7 +3,27 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Not Selected
+  - Selected
+  - Pandemic
+  - Smallpox
+  - Bubonic plague
+  - Yellow fever
+  - Typhus
+  - Cholera
+  - Malaria
+  - Measles
+  - African trypanosomiasis
+  - Kuru
+  - Influenza
+  - HIV
+  - SARS
+  - Dengue fever
+  - Meningitis
+  - Ebola
+  - COVID-19
+  - MERS-CoV
   layers:
   - Default
   - TransparentFX
