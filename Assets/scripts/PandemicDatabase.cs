@@ -31,7 +31,7 @@ public class Pandemic
 public class PandemicDatabase : MonoBehaviour
 {
     public TextAsset csvFile;  // Assign the CSV file in the inspector
-    private List<Pandemic> pandemics = new List<Pandemic>();
+    public List<Pandemic> pandemics = new List<Pandemic>();
 
     void Start()
     {
@@ -53,7 +53,6 @@ public class PandemicDatabase : MonoBehaviour
         }
         
     }
-
     // Function to get pandemics by year (you can modify this based on your specific needs)
     public List<Pandemic> GetPandemicsByYear(int year)
     {

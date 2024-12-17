@@ -21,6 +21,20 @@ public class TimelineSlider : MonoBehaviour
         timelineSlider.onValueChanged.AddListener(UpdateYear);
     }
 
+    public void SetSliderToYear(int year)
+    {
+        // Ensure the year is within the slider's range
+        if (year >= timelineSlider.minValue && year <= timelineSlider.maxValue)
+        {
+            timelineSlider.value = year; // Set slider position
+            UpdateYear(timelineSlider.value); // Manually call UpdateYear to trigger updates
+        }
+        else
+        {
+            Debug.LogWarning($"Year {year} is out of range. Slider range is {timelineSlider.minValue} to {timelineSlider.maxValue}.");
+        }
+    }
+
     void UpdateYear(float value)
     {
         int year = Mathf.RoundToInt(value); // Ensure it's an integer
@@ -79,7 +93,6 @@ public class TimelineSlider : MonoBehaviour
                     if (System.Enum.TryParse(countryName, out Country countryEnum))
                     {
                         // Mark the country as affected by the pandemic
-                        Debug.Log(pathogenType);
                         worldMap.MarkPandemic(countryEnum, pathogenType);
                     }
                     else if (countryName == "World")

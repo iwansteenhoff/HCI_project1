@@ -24,6 +24,7 @@ TagManager:
   - Ebola
   - COVID-19
   - MERS-CoV
+  - pandemic selected
   layers:
   - Default
   - TransparentFX

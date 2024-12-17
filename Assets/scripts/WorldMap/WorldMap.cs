@@ -23,13 +23,19 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     ///current selected countries list of value type List<Countries>
     ///</summary>
     [HideInInspector]public List<Country> selectedCountries = new List<Country>();
+    [HideInInspector] public List<string> selectedPandemics = new List<string>();
+    private float year;
+    public UnityEngine.UI.Slider timelineSlider;
+    public HandleInput handleInput;
 
-    
+
     ///<summary>
     /// Fire an event once the user select a country
     ///</summary>
     public event EventHandler onSelectCountry;
 
+    // Fire an event once the user selects a pandemic
+    public event EventHandler onSelectPandemic;
     ///<summary>
     /// Fire an event once the user highlight a country
     ///</summary>
@@ -40,11 +46,17 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     ///</summary>
     public event EventHandler onUnselectCountry;
 
+    // Fire an event once the user unselects a pandemic
+    public event EventHandler onUnselectPandemic;
 
     ///<summary>
     /// When set to "true" the user can interact with the map
     ///</summary>
     public bool canInteracte = true;
+
+    public string[] virusTags = new string[] { "Smallpox", "Bubonic plague", "Yellow fever", "Typhus", "Cholera", "Malaria",
+                                    "Measles", "African trypanosomiasis", "Kuru", "Influenza", "HIV", "SARS",
+                                    "Dengue fever", "Meningitis", "MERS-CoV", "Ebola", "COVID-19" };
 
 
 
@@ -56,6 +68,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     MapStyleController mapStyleController;
     bool mouseOnRange = false;
     Vector2 firstTouch;
+    public float brightnessFactor = 1.2f;
     ///<summary>
     /// Clear all selected countries
     ///</summary>
@@ -121,7 +134,77 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         }
         
     }
-    
+    public void SelectPandemic(Country country)
+    {
+        year = timelineSlider.value; 
+        if (mapStyleController.interactionMode == InteractionModes.Single)
+        {
+            foreach (string p in selectedPandemics)
+            {
+
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    Transform countryTransform = transform.GetChild(i);
+
+                    // Check if the country's tag is "p"
+                    if (countryTransform.gameObject.tag == "pandemic selected")
+                    {
+                        // Update the tag to "pandemic selected"
+                        countryTransform.gameObject.tag = p;
+
+                        // Change the country's color to indicate it's selected for a pandemic
+                        // countryTransform.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
+                    }
+                }
+            }
+            selectedPandemics.Clear();
+        }
+        Transform countryT = transform.GetChild((int)country);
+        string tagcountry = countryT.tag;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform countryTransform = transform.GetChild(i);
+
+            // Check if the country's tag is the same as the selected tag
+            if (countryTransform.gameObject.tag == tagcountry)
+            {
+                // Update the tag to "pandemic selected"
+                countryTransform.gameObject.tag = "pandemic selected";
+
+                
+                
+                // Change the country's color to indicate it's selected for a pandemic
+                // countryTransform.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
+            }
+        }
+        selectedPandemics.Add(tagcountry);
+        handleInput.SetTextToSelectedVirus(tagcountry, timelineSlider.value);
+
+    }
+
+    public void UnselectPandemic(Country country)
+    {
+        
+        Transform countryT = transform.GetChild((int)country);
+        string tagcountry = selectedPandemics[0];
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform countryTransform = transform.GetChild(i);
+
+            // Check if the country's tag is the same as the selected tag
+            if (countryTransform.gameObject.tag == "pandemic selected")
+            {
+                // Update the tag to "pandemic selected"
+                countryTransform.gameObject.tag = tagcountry;
+
+                // Change the country's color to indicate it's selected for a pandemic
+                // countryTransform.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
+            }
+        }
+        selectedPandemics.Clear();
+
+
+    }
     ///<summary>
     /// Select Country
     ///</summary>
@@ -169,6 +252,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         float magnitude = (firstTouch - new Vector2(Input.mousePosition.x,Input.mousePosition.y)).magnitude;
         if(canInteracte&&magnitude ==0)
         SelectCountry();
+        SelectPandemic();
     }
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -252,9 +336,6 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     
     public void MarkAllCountriesNotselected()
     {
-        string[] virusTags = new string[] { "Smallpox", "Bubonic plague", "Yellow fever", "Typhus", "Cholera", "Malaria",
-                                    "Measles", "African trypanosomiasis", "Kuru", "Influenza", "HIV", "SARS",
-                                    "Dengue fever", "Meningitis", "MERS-CoV", "Ebola", "COVID-19" };
         selectedCountries.Clear();
         for (int x = 0; x < transform.childCount; x++)
         {
@@ -284,7 +365,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
             countryT.tag = pathogenType;
         }
     }
-
+   
     void SelectCountry()
     {
         ColorsGS grayScale = GetGSid();
@@ -305,7 +386,28 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
             }
         }
     }
-    
+    void SelectPandemic()
+    {
+        ColorsGS grayScale = GetGSid();
+        if (grayScale != ColorsGS.GS1)
+        {
+            int index = ((int)grayScale);
+            if (virusTags.Contains(transform.GetChild(index).tag))
+            {
+                SelectPandemic((Country)index);
+                if (onSelectPandemic != null)
+                    onSelectPandemic(this, EventArgs.Empty);
+            }
+            else if (transform.GetChild(index).tag == "pandemic selected")
+            {
+                UnselectPandemic((Country)index);
+                if (onUnselectPandemic != null)
+                    onUnselectPandemic(this, EventArgs.Empty);
+            }
+        }
+    }
+
+
     void HighlightCountry()
     {
         ColorsGS grayScale = GetGSid();
@@ -365,6 +467,15 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
             default:
                 return mapStyleController.DefaultColorForPandemicCountries; // Default color if pathogen is unrecognized
         }
+    }
+    Color MakeColorBrighter(Color color, float factor)
+    {
+        // Clamp the RGB values between 0 and 1
+        float r = Mathf.Clamp01(color.r * factor);
+        float g = Mathf.Clamp01(color.g * factor);
+        float b = Mathf.Clamp01(color.b * factor);
+
+        return new Color(r, g, b, color.a); // Preserve the alpha value
     }
 }
 public enum Country
