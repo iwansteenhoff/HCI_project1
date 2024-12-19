@@ -151,9 +151,10 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                     {
                         // Update the tag to "pandemic selected"
                         countryTransform.gameObject.tag = p;
+                        Color original_color = GetColorForPathogen(p);
 
                         // Change the country's color to indicate it's selected for a pandemic
-                        // countryTransform.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
+                        countryTransform.GetComponent<SpriteRenderer>().color = original_color;
                     }
                 }
             }
@@ -171,10 +172,11 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                 // Update the tag to "pandemic selected"
                 countryTransform.gameObject.tag = "pandemic selected";
 
-                
+                Color color = GetColorForPathogen(tagcountry);
+                Color new_color = MakeColorBrighter(color, brightnessFactor);
                 
                 // Change the country's color to indicate it's selected for a pandemic
-                // countryTransform.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
+                countryTransform.GetComponent<SpriteRenderer>().color = new_color;
             }
         }
         selectedPandemics.Add(tagcountry);
@@ -198,10 +200,12 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                 countryTransform.gameObject.tag = tagcountry;
 
                 // Change the country's color to indicate it's selected for a pandemic
-                // countryTransform.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
+                Color original_color = GetColorForPathogen(tagcountry);
+                countryTransform.GetComponent<SpriteRenderer>().color = original_color;
             }
         }
         selectedPandemics.Clear();
+
 
 
     }
@@ -339,7 +343,6 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         selectedCountries.Clear();
         for (int x = 0; x < transform.childCount; x++)
         {
-            Debug.Log(transform.GetChild(x).tag);
             if (virusTags.Contains(transform.GetChild(x).tag))
             {
                 transform.GetChild(x).GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForCountries;
@@ -424,6 +427,16 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                 if(onHighlightCountry != null)
                 onHighlightCountry(this,EventArgs.Empty);
             }
+            else
+            {
+            // Reset the last highlighted country's color if it's not "Selected"
+            if (transform.GetChild((int)highlightedCountry).tag != "Selected")
+            {
+                transform.GetChild((int)highlightedCountry).GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForCountries;
+                highlightedCountry = Country.Empty; // Optional: Reset to a default state
+            }
+
+        }
     }
     private Color GetColorForPathogen(string pathogenType)
     {

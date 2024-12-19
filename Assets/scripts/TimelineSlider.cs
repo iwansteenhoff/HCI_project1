@@ -58,6 +58,7 @@ public class TimelineSlider : MonoBehaviour
     }
     void DisplayPandemicsForYear(int year)
     {
+        Debug.Log("timeline slider is active");
         // Retrieve the pandemics for the selected year
         var pandemics = pandemicDatabase.GetPandemicsByYear(year);
 
@@ -83,7 +84,6 @@ public class TimelineSlider : MonoBehaviour
                     countryPlagueList.Add((countryName.Trim(), pandemic.Pathogen)); // Add tuple to list
                 }
             }
-
             // Process the country-plague tuples
             foreach (var (countryName, pathogenType) in countryPlagueList)
             {
