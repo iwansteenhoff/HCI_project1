@@ -10,6 +10,7 @@ public class HandleInput : MonoBehaviour
     public PandemicDatabase pandemicDatabase; // Reference to your pandemic database
     public TimelineSlider timelineSlider;
     public UnityEngine.UI.Slider timelineSliderObject;
+    public VirusImageController virusImageController;
     private List<string> pandemicnames = new List<string> {"antonineplague","plagueofjustinian","japanesesmallpox",
     "blackdeath","mexicosmallpox","spainplague",
     "wyandotpeople","greatplagueinthelatemingdynasty","icelandsmallpox",
@@ -90,6 +91,7 @@ public class HandleInput : MonoBehaviour
                     if (timelineSliderObject.value >= firstyear && timelineSliderObject.value <= secondyear)
                     {
                         pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
+                        virusImageController.SetVirusImage(matchedpandemic.Pathogen);
                         return;
                     }
                 }
@@ -98,11 +100,13 @@ public class HandleInput : MonoBehaviour
                 if (timelineSliderObject.value == thirdyear)
                 {
                     pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
+                    virusImageController.SetVirusImage(matchedpandemic.Pathogen);
                     return;
                 }
                 
                 timelineSlider.SetSliderToYear(thirdyear);
                 pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
+                virusImageController.SetVirusImage(matchedpandemic.Pathogen);
 
                 return; // Exit after finding the first match
             }
@@ -162,9 +166,13 @@ public class HandleInput : MonoBehaviour
                 {
                     confirmedpandemics.Add(pandemic.Event);
                 }
+                if (potentialcountry == "World")
+                {
+                    confirmedpandemics.Add(pandemic.Event);
+                }
             }
         }
-        string begintext = "The pandemics that effected this country are: ";
+        string begintext = $"The pandemics that effected {country} are: ";
         foreach (string confirmedpandemic in confirmedpandemics)
         {
             begintext += $"{confirmedpandemic}, ";

@@ -229,6 +229,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         Transform countryT = transform.GetChild((int)country);
         countryT.gameObject.tag = "Selected";
         countryT.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
+        handleInput.SetTextToSelectedCountry(country.ToString());
     }
     ///<summary>
     /// Unselect Country
@@ -338,12 +339,12 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     }
 
     
-    public void MarkAllCountriesNotselected()
+    public void MarkAllCountriesNotselectedOrHighlighted()
     {
         selectedCountries.Clear();
         for (int x = 0; x < transform.childCount; x++)
         {
-            if (virusTags.Contains(transform.GetChild(x).tag))
+            if (virusTags.Contains(transform.GetChild(x).tag) || transform.GetChild(x).tag == "Not Selected" || transform.GetChild(x).tag == "Selected" || transform.GetChild(x).tag == "pandemic selected")
             {
                 transform.GetChild(x).GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForCountries;
                 transform.GetChild(x).tag = "Not Selected";
@@ -438,6 +439,10 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
         }
     }
+
+ 
+
+
     private Color GetColorForPathogen(string pathogenType)
     {
         // Replace with your actual color mappings for each pathogen

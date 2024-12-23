@@ -58,12 +58,11 @@ public class TimelineSlider : MonoBehaviour
     }
     void DisplayPandemicsForYear(int year)
     {
-        Debug.Log("timeline slider is active");
         // Retrieve the pandemics for the selected year
         var pandemics = pandemicDatabase.GetPandemicsByYear(year);
 
         // Reset all previously marked countries to unselected
-        worldMap.MarkAllCountriesNotselected();
+        worldMap.MarkAllCountriesNotselectedOrHighlighted();
 
         if (pandemics.Count == 0)
         {
