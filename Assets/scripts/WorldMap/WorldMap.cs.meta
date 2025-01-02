@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: e97e9c7d787428b44acd1217b4f8c50f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - GSmap: {fileID: 2800000, guid: f24432246447e264587d90e820e76f3a, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

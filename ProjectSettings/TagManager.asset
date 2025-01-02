@@ -3,7 +3,28 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Not Selected
+  - Selected
+  - Pandemic
+  - Smallpox
+  - Bubonic plague
+  - Yellow fever
+  - Typhus
+  - Cholera
+  - Malaria
+  - Measles
+  - African trypanosomiasis
+  - Kuru
+  - Influenza
+  - HIV
+  - SARS
+  - Dengue fever
+  - Meningitis
+  - Ebola
+  - COVID-19
+  - MERS-CoV
+  - pandemic selected
   layers:
   - Default
   - TransparentFX
@@ -40,4 +61,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 1087352463
+    locked: 0
+  - name: meshes
+    uniqueID: 2579746857
     locked: 0
