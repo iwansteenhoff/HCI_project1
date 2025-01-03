@@ -220,7 +220,27 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     ///</summary>
     public void SelectCountry(Country country)
     {
-        if(mapStyleController.interactionMode == InteractionModes.Single)
+        foreach (string p in selectedPandemics)
+        {
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform countryTransform = transform.GetChild(i);
+
+                // Check if the country's tag is "p"
+                if (countryTransform.gameObject.tag == "pandemic selected")
+                {
+                    // Update the tag to "pandemic selected"
+                    countryTransform.gameObject.tag = p;
+                    Color original_color = GetColorForPathogen(p);
+
+                    // Change the country's color to indicate it's selected for a pandemic
+                    countryTransform.GetComponent<SpriteRenderer>().color = original_color;
+                }
+            }
+        }
+        selectedPandemics.Clear();
+        if (mapStyleController.interactionMode == InteractionModes.Single)
         {
             foreach (Country c in selectedCountries)
             {
@@ -235,8 +255,9 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         Transform countryT = transform.GetChild((int)country);
         countryT.gameObject.tag = "Selected";
         countryT.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
-        handleInput.SetTextToSelectedCountry(country.ToString());
         handleInput.RemoveText();
+        handleInput.SetTextToSelectedCountry(country.ToString());
+        
     }
     ///<summary>
     /// Unselect Country
