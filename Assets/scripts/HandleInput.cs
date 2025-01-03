@@ -76,6 +76,8 @@ public class HandleInput : MonoBehaviour
         List<Pandemic> pandemics = pandemicDatabase.pandemics;
         Debug.Log($"sdfsdf{processedInput}");
         // Check for a match
+        RemoveText();
+
         foreach (var name in pandemicnames)
         {
             
@@ -90,6 +92,11 @@ public class HandleInput : MonoBehaviour
                     int secondyear = int.Parse(years[1]);
                     if (timelineSliderObject.value >= firstyear && timelineSliderObject.value <= secondyear)
                     {
+                        RectTransform textRectTransform1 = pandemicInfoText.GetComponent<RectTransform>();
+                        {
+                            // Adjust the y-coordinate to move the text box higher
+                            textRectTransform1.anchoredPosition = new Vector2(3, -170);
+                        }
                         pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
                         virusImageController.SetVirusImage(matchedpandemic.Pathogen);
                         return;
@@ -99,12 +106,22 @@ public class HandleInput : MonoBehaviour
                 int thirdyear = int.Parse(years[0]);
                 if (timelineSliderObject.value == thirdyear)
                 {
+                    RectTransform textRectTransform2 = pandemicInfoText.GetComponent<RectTransform>();
+                    {
+                        // Adjust the y-coordinate to move the text box higher
+                        textRectTransform2.anchoredPosition = new Vector2(3, -170);
+                    }
                     pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
                     virusImageController.SetVirusImage(matchedpandemic.Pathogen);
                     return;
                 }
                 
                 timelineSlider.SetSliderToYear(thirdyear);
+                RectTransform textRectTransform3 = pandemicInfoText.GetComponent<RectTransform>();
+                {
+                    // Adjust the y-coordinate to move the text box higher
+                    textRectTransform3.anchoredPosition = new Vector2(3, -170);
+                }
                 pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
                 virusImageController.SetVirusImage(matchedpandemic.Pathogen);
 
@@ -114,7 +131,11 @@ public class HandleInput : MonoBehaviour
 
         Debug.Log("No match found for the input.");
     }
-
+    public void RemoveText()
+    {
+        pandemicInfoText.text = null;
+        virusImageController.RemoveVirusImage();
+    }
     public void SetTextToSelectedVirus(string tagcountry, float year)
     {
         foreach (Pandemic pandemic in pandemicDatabase.pandemics)
@@ -177,7 +198,13 @@ public class HandleInput : MonoBehaviour
         {
             begintext += $"{confirmedpandemic}, ";
         }
+        RectTransform textRectTransform = pandemicInfoText.GetComponent<RectTransform>();
+        {
+            // Adjust the y-coordinate to move the text box higher
+            textRectTransform.anchoredPosition = new Vector2(3, 110);
+        }
         pandemicInfoText.text = begintext;
+
     }
     void OnInputValueChanged(string input)
     {
@@ -224,4 +251,6 @@ public class HandleInput : MonoBehaviour
             }
         });
     }
+
+    
 }

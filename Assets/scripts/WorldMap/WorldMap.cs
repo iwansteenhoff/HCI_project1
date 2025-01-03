@@ -180,6 +180,11 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
             }
         }
         selectedPandemics.Add(tagcountry);
+        Transform countryS = transform.GetChild((int)selectedCountry);
+        countryS.gameObject.tag = "Not Selected";
+        countryS.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForCountries;
+        selectedCountry = Country.Empty;
+
         handleInput.SetTextToSelectedVirus(tagcountry, timelineSlider.value);
 
     }
@@ -204,6 +209,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                 countryTransform.GetComponent<SpriteRenderer>().color = original_color;
             }
         }
+        handleInput.RemoveText();
         selectedPandemics.Clear();
 
 
@@ -230,6 +236,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         countryT.gameObject.tag = "Selected";
         countryT.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
         handleInput.SetTextToSelectedCountry(country.ToString());
+        handleInput.RemoveText();
     }
     ///<summary>
     /// Unselect Country
@@ -240,6 +247,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         Transform countryT = transform.GetChild((int)country);
         countryT.gameObject.tag = "Not Selected";
         countryT.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForCountries;
+        handleInput.RemoveText();
         selectedCountry = Country.Empty;
         
     }

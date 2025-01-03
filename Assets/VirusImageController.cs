@@ -37,4 +37,10 @@ public class VirusImageController : MonoBehaviour
         imageComponent.sprite = image;
         imageComponent.enabled = true;
     }
+
+    public void RemoveVirusImage()
+    {
+        imageComponent.sprite = null; // Clear any assigned sprite
+        imageComponent.enabled = false; // Disable the Image component
+    }
 }
