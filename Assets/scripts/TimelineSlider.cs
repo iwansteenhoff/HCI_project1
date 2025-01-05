@@ -10,6 +10,7 @@ public class TimelineSlider : MonoBehaviour
     public bool isSliderActive;
     public PandemicDatabase pandemicDatabase;
     public WorldMap worldMap;
+    public TMP_InputField inputField; // Input field for keyboard input
 
     void Start()
     {
@@ -19,6 +20,20 @@ public class TimelineSlider : MonoBehaviour
 
         // Add listener for slider value changes
         timelineSlider.onValueChanged.AddListener(UpdateYear);
+
+        if (inputField != null)
+        {
+            inputField.gameObject.SetActive(false);
+            inputField.onEndEdit.AddListener(OnYearInputSubmit);
+        }
+
+        // Add double-click listener to the year text
+        var textButton = yearText.GetComponentInParent<Button>(); // Ensure the TMP_Text is inside a Button parent
+        if (textButton != null)
+        {
+            textButton.onClick.AddListener(OnYearTextDoubleClick);
+        }
+
     }
 
     public void SetSliderToYear(int year)
@@ -46,16 +61,18 @@ public class TimelineSlider : MonoBehaviour
     {
         return Mathf.RoundToInt(timelineSlider.value);  // Return the rounded value of the slider
     }
+
     // These methods will be called by the EventSystem
     public void OnPointerDown()
     {
-            isSliderActive = true;
+        isSliderActive = true;
     }
-    
+
     public void OnPointerUp()
     {
         isSliderActive = false;
     }
+
     void DisplayPandemicsForYear(int year)
     {
         // Retrieve the pandemics for the selected year
@@ -110,5 +127,29 @@ public class TimelineSlider : MonoBehaviour
                 }
             }
         }
+    }
+
+    
+
+    public void OnYearTextDoubleClick()
+    {
+        yearText.gameObject.SetActive(false);
+        inputField.gameObject.SetActive(true);
+        inputField.ActivateInputField();
+    }
+
+    public void OnYearInputSubmit(string input)
+    {
+        if (int.TryParse(input, out int year))
+        {
+            SetSliderToYear(year);
+        }
+        else
+        {
+            Debug.LogWarning($"Invalid input: {input}");
+        }
+
+        inputField.gameObject.SetActive(false);
+        yearText.gameObject.SetActive(true);
     }
 }
