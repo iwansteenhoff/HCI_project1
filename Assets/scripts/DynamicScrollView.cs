@@ -5,6 +5,8 @@ using TMPro;
 
 public class DynamicScrollView : MonoBehaviour
 {
+    public Button scrollLeftButton;   // Button to scroll left
+    public Button scrollRightButton;  // Button to scroll right
     public GameObject buttonPrefab;      // The button prefab to instantiate.
     public Transform contentTransform;   // The content transform where buttons will be placed.
     public ScrollRect scrollRect;        // Reference to ScrollRect (from ScrollView).
@@ -46,8 +48,13 @@ public class DynamicScrollView : MonoBehaviour
         {
             Debug.Log("ScrollRect is assigned.");
         }
+        // Assign click listeners
+        scrollLeftButton.onClick.AddListener(() => ScrollContent(-1));  // Move right (to the left visually)
+        scrollRightButton.onClick.AddListener(() => ScrollContent(1)); // Move left (to the right visually)
+
 
         PopulateScrollView();
+        UpdateScrollButtonVisibility();
     }
 
     public void UpdateScrollViewForEpidemic(string epidemicName)
@@ -57,6 +64,129 @@ public class DynamicScrollView : MonoBehaviour
 
         // Populate the scroll view based on the selected epidemic
         PopulateScrollView();
+    }
+
+    void UpdateScrollButtonVisibility()
+    {
+        // Get the current scroll position
+        float scrollPosition = scrollRect.horizontalNormalizedPosition;
+
+        // Fade out the right button if we can't scroll right anymore
+        if (scrollRightButton != null)
+        {
+            Image rightButtonImage = scrollRightButton.GetComponent<Image>();
+            if (rightButtonImage != null)
+            {
+                rightButtonImage.color = new Color(rightButtonImage.color.r, rightButtonImage.color.g, rightButtonImage.color.b, scrollPosition >= 1f ? 0.3f : 1f);
+            }
+        }
+
+        // Fade out the left button if we can't scroll left anymore
+        if (scrollLeftButton != null)
+        {
+            Image leftButtonImage = scrollLeftButton.GetComponent<Image>();
+            if (leftButtonImage != null)
+            {
+                leftButtonImage.color = new Color(leftButtonImage.color.r, leftButtonImage.color.g, leftButtonImage.color.b, scrollPosition <= 0f ? 0.3f : 1f);
+            }
+        }
+    }
+
+
+
+
+    void ScrollContent(int direction)
+    {
+        RectTransform contentRect = contentTransform.GetComponent<RectTransform>();
+        if (contentRect == null)
+        {
+            Debug.LogError("Content Transform does not have a RectTransform component.");
+            return;
+        }
+
+        RectTransform buttonRect = buttonPrefab.GetComponent<RectTransform>();
+        if (buttonRect == null)
+        {
+            Debug.LogError("Button Prefab does not have a RectTransform component.");
+            return;
+        }
+
+        float buttonWidth = buttonRect.rect.width;
+        float contentWidth = buttonWidth * contentRect.childCount;
+
+        float stepSize = buttonWidth / contentWidth;
+
+        // Calculate the new scroll position
+        float newScrollPosition = Mathf.Clamp(
+            scrollRect.horizontalNormalizedPosition + (direction * stepSize),
+            0f,
+            1f
+        );
+
+        // Only update if the position changes (prevents "twitching" at limits)
+        if (Mathf.Approximately(scrollRect.horizontalNormalizedPosition, newScrollPosition))
+        {
+            Debug.Log("Scrolling not possible in this direction.");
+            return;
+        }
+
+        scrollRect.horizontalNormalizedPosition = newScrollPosition;
+
+        // Update button visibility after scrolling
+        UpdateScrollButtonVisibility();
+    }
+
+
+
+    void UpdateButtonColors(GameObject button, Documents doc)
+    {
+        // Get the button's background image
+        Image buttonBackground = button.GetComponent<Image>();
+        if (buttonBackground == null)
+        {
+            Debug.LogError("Button background (Image) not found.");
+            return;
+        }
+
+        // Get all TextMeshProUGUI components inside the button
+        TextMeshProUGUI[] textComponents = button.GetComponentsInChildren<TextMeshProUGUI>();
+
+        // Apply color changes based on the type
+        if (doc.Type == "Primary")
+        {
+            // Set white background and black text
+            buttonBackground.color = Color.white;
+
+            foreach (TextMeshProUGUI textComponent in textComponents)
+            {
+                textComponent.color = Color.black;
+            }
+        }
+        else if (doc.Type == "Secondary")
+        {
+            // Set black background and white text
+            buttonBackground.color = Color.black;
+
+            foreach (TextMeshProUGUI textComponent in textComponents)
+            {
+                textComponent.color = Color.white;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Unknown type: {doc.Type}. No color changes applied.");
+        }
+    }
+
+    void ShuffleDocuments(List<Documents> documents)
+    {
+        for (int i = 0; i < documents.Count; i++)
+        {
+            int randomIndex = Random.Range(0, documents.Count);
+            Documents temp = documents[i];
+            documents[i] = documents[randomIndex];
+            documents[randomIndex] = temp;
+        }
     }
 
     void PopulateScrollView()
@@ -82,6 +212,7 @@ public class DynamicScrollView : MonoBehaviour
             Debug.LogWarning($"No documents found for epidemic: {selectedEpidemic}");
             return;
         }
+        ShuffleDocuments(epidemicDocuments);
 
         Debug.Log($"Found {epidemicDocuments.Count} documents for epidemic: {selectedEpidemic}");
 
@@ -138,6 +269,7 @@ public class DynamicScrollView : MonoBehaviour
             if (buttonComponent != null)
             {
                 buttonComponent.onClick.AddListener(() => OnButtonClick(doc));
+                UpdateButtonColors(button, doc);
                 Debug.Log($"Button created for document: {doc.Title}");
             }
             else
@@ -214,7 +346,22 @@ public class DynamicScrollView : MonoBehaviour
 
         if (popupTitle != null) popupTitle.text = document.Title;
         if (popupComment != null) popupComment.text = document.Comments;
-        if (hyperlinkText != null) hyperlinkText.text = document.DocumentSource;
+
+        if (hyperlinkText != null)
+        {
+            hyperlinkText.text = document.DocumentSource;  // Set the text of the hyperlink button
+
+            // Find the OpenLink component and set the document URL
+            OpenLink openLinkScript = hyperlinkText.GetComponentInParent<OpenLink>();
+            if (openLinkScript != null)
+            {
+                openLinkScript.SetDocumentSource(document.DocumentSource); // Pass the URL to OpenLink
+            }
+            else
+            {
+                Debug.LogError("OpenLink script not found on hyperlink button.");
+            }
+        }
 
         // Find and set up the close button ("X")
         Button closeButton = popup.transform.Find("CloseButton")?.GetComponent<Button>();
@@ -227,6 +374,7 @@ public class DynamicScrollView : MonoBehaviour
             Debug.LogError("Close button (X) not found in popup prefab.");
         }
     }
+
 
 
     void ClosePopup(GameObject popup)
