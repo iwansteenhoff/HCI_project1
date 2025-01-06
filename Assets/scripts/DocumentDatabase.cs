@@ -51,7 +51,10 @@ public class DocumentDatabase : MonoBehaviour
         // Loop through all the lines of the CSV (starting from 1 to skip the header)
         for (int i = 1; i < lines.Length; i++)
         {
-            string[] values = lines[i].Split(';');
+            string line = lines[i];
+
+            // Handle the case where fields are enclosed in double quotes and may contain commas
+            string[] values = ParseCSVLine(line);
 
             // Ensure that the row contains the expected number of columns (7 data columns)
             if (values.Length == 7)
@@ -95,5 +98,67 @@ public class DocumentDatabase : MonoBehaviour
             Debug.Log($"Authors: {string.Join(", ", epidemicAuthors[epidemic])}");
             Debug.Log($"Comments: {string.Join(", ", epidemicComments[epidemic])}");
         }
+    }
+
+    // Helper method to parse a CSV line, handling quoted fields with commas inside
+    string[] ParseCSVLine(string line)
+    {
+        List<string> values = new List<string>();
+        bool insideQuotes = false;
+        string currentValue = "";
+
+        for (int i = 0; i < line.Length; i++)
+        {
+            char currentChar = line[i];
+
+            if (currentChar == '"')
+            {
+                // Toggle insideQuotes when encountering a quote
+                if (insideQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                {
+                    // Double quote represents a literal quote inside the value
+                    currentValue += '"';
+                    i++; // Skip the next quote
+                }
+                else
+                {
+                    insideQuotes = !insideQuotes;
+                }
+            }
+            else if (currentChar == ',' && !insideQuotes)
+            {
+                // Comma separates values only when not inside quotes
+                values.Add(currentValue);
+                currentValue = ""; // Reset for the next value
+            }
+            else
+            {
+                currentValue += currentChar; // Add character to the current value
+            }
+        }
+
+        // Add the last value to the list
+        if (!string.IsNullOrEmpty(currentValue))
+        {
+            values.Add(currentValue);
+        }
+
+        return values.ToArray();
+    }
+
+    public List<Documents> GetDocumentsForEpidemic(string epidemic)
+    {
+        List<Documents> selectedDocuments = new List<Documents>();
+
+        // Find all documents associated with the given epidemic
+        foreach (var doc in documentsList)
+        {
+            if (doc.Epidemic == epidemic)
+            {
+                selectedDocuments.Add(doc);
+            }
+        }
+
+        return selectedDocuments;
     }
 }

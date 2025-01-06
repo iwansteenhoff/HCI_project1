@@ -11,6 +11,8 @@ public class HandleInput : MonoBehaviour
     public TimelineSlider timelineSlider;
     public UnityEngine.UI.Slider timelineSliderObject;
     public VirusImageController virusImageController;
+    public DynamicScrollView dynamicScrollView;
+    private string selectedPandemicName = null; // To store the selected pandemic name
     private List<string> pandemicnames = new List<string> {"antonineplague","plagueofjustinian","japanesesmallpox",
     "blackdeath","mexicosmallpox","spainplague",
     "wyandotpeople","greatplagueinthelatemingdynasty","icelandsmallpox",
@@ -34,7 +36,7 @@ public class HandleInput : MonoBehaviour
         "HIV/AIDS pandemic", "Latin America cholera epidemic", "SARS outbreak", "Philippines dengue epidemic", "West African meningitis outbreak",
         "Middle East respiratory syndrome coronavirus outbreak", "Western African Ebola virus epidemic",
         "Angola and Democratic Republic of the Congo yellow fever outbreak", "COVID-19 pandemic"};
-    
+
 
     private void Start()
     {
@@ -71,61 +73,27 @@ public class HandleInput : MonoBehaviour
             Debug.Log("Input is empty or null.");
             return;
         }
-        Debug.Log(userInput);
+
         string processedInput = CleanInput(userInput);
         List<Pandemic> pandemics = pandemicDatabase.pandemics;
-        Debug.Log($"sdfsdf{processedInput}");
-        // Check for a match
+
         RemoveText();
 
         foreach (var name in pandemicnames)
         {
-            
             if (name.Equals(processedInput, System.StringComparison.OrdinalIgnoreCase))
             {
-                Pandemic matchedpandemic = pandemics[pandemicnames.IndexOf(name)];
-                Debug.Log($"Match found: {matchedpandemic.Event}");
-                string[] years = matchedpandemic.Date.Split("-");
-                if (years.Length == 2)
-                {
-                    int firstyear = int.Parse(years[0]);
-                    int secondyear = int.Parse(years[1]);
-                    if (timelineSliderObject.value >= firstyear && timelineSliderObject.value <= secondyear)
-                    {
-                        RectTransform textRectTransform1 = pandemicInfoText.GetComponent<RectTransform>();
-                        {
-                            // Adjust the y-coordinate to move the text box higher
-                            textRectTransform1.anchoredPosition = new Vector2(3, -170);
-                        }
-                        pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
-                        virusImageController.SetVirusImage(matchedpandemic.Pathogen);
-                        return;
-                    }
-                }
-                
-                int thirdyear = int.Parse(years[0]);
-                if (timelineSliderObject.value == thirdyear)
-                {
-                    RectTransform textRectTransform2 = pandemicInfoText.GetComponent<RectTransform>();
-                    {
-                        // Adjust the y-coordinate to move the text box higher
-                        textRectTransform2.anchoredPosition = new Vector2(3, -170);
-                    }
-                    pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
-                    virusImageController.SetVirusImage(matchedpandemic.Pathogen);
-                    return;
-                }
-                
-                timelineSlider.SetSliderToYear(thirdyear);
-                RectTransform textRectTransform3 = pandemicInfoText.GetComponent<RectTransform>();
-                {
-                    // Adjust the y-coordinate to move the text box higher
-                    textRectTransform3.anchoredPosition = new Vector2(3, -170);
-                }
-                pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
-                virusImageController.SetVirusImage(matchedpandemic.Pathogen);
+                Pandemic matchedPandemic = pandemics[pandemicnames.IndexOf(name)];
 
-                return; // Exit after finding the first match
+                // Correct placement of the line
+                selectedPandemicName = matchedPandemic.Event; // Store the selected pandemic name
+                Debug.Log($"Match found: {selectedPandemicName}");
+
+                // Display information about the pandemic
+                pandemicInfoText.text = FormatPandemicInfo(matchedPandemic);
+                virusImageController.SetVirusImage(matchedPandemic.Pathogen);
+                dynamicScrollView.UpdateScrollViewForEpidemic(selectedPandemicName);
+                return;
             }
         }
 
@@ -154,11 +122,11 @@ public class HandleInput : MonoBehaviour
                     }
                 }
             }
-            
+
             else
             {
                 Debug.Log(year);
-                
+
                 int year_3 = int.Parse(years[0]);
                 Debug.Log(year_3);
                 if (year_3 == year)
@@ -168,8 +136,8 @@ public class HandleInput : MonoBehaviour
                         CheckInputAgainstPandemics(pandemic.Event);
                         return;
                     }
-                }    
-                
+                }
+
             }
         }
     }
@@ -231,7 +199,7 @@ public class HandleInput : MonoBehaviour
         {
             dropdown.gameObject.SetActive(false);
         }
-        
+
         // Select a suggestion if clicked
         dropdown.onValueChanged.AddListener(index =>
         {
@@ -251,6 +219,10 @@ public class HandleInput : MonoBehaviour
             }
         });
     }
+    public string GetSelectedPandemicName()
+    {
+        return selectedPandemicName; // Return the selected pandemic name
+    }
 
-    
+
 }
