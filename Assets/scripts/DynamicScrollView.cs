@@ -13,6 +13,7 @@ public class DynamicScrollView : MonoBehaviour
     public DocumentDatabase documentDatabase;  // Reference to DocumentDatabase to get document data
     public GameObject popupPrefab;
     private string selectedEpidemic;     // Store the selected epidemic name
+    private GameObject currentPopup = null;
 
     void Start()
     {
@@ -326,11 +327,18 @@ public class DynamicScrollView : MonoBehaviour
 
     void ShowPopup(Documents document)
     {
-        // Instantiate the popup prefab under the correct parent (ensure it's part of the UI)
-        GameObject popup = Instantiate(popupPrefab, transform.root);  // Using 'transform.root' to attach to the root canvas
+
+        if (currentPopup != null)
+        {
+            Destroy(currentPopup);
+        }
+
+
+        // Instantiate the new popup prefab under the correct parent (ensure it's part of the UI)
+        currentPopup = Instantiate(popupPrefab, transform.root);  // Using 'transform.root' to attach to the root canvas
 
         // Ensure the popup's RectTransform is set up correctly
-        RectTransform popupRectTransform = popup.GetComponent<RectTransform>();
+        RectTransform popupRectTransform = currentPopup.GetComponent<RectTransform>();
         if (popupRectTransform != null)
         {
             // Optional: Reset anchors and position if necessary
@@ -338,11 +346,12 @@ public class DynamicScrollView : MonoBehaviour
             popupRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             popupRectTransform.anchoredPosition = Vector2.zero;
         }
+        popupRectTransform.sizeDelta = new Vector2(1500, 700);
 
         // Set the metadata in the popup (like title, comment, hyperlink, etc.)
-        TextMeshProUGUI popupTitle = popup.transform.Find("popupTitle")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI popupComment = popup.transform.Find("popupComment")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI hyperlinkText = popup.transform.Find("hyperlinkText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI popupTitle = currentPopup.transform.Find("popupTitle")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI popupComment = currentPopup.transform.Find("popupComment")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI hyperlinkText = currentPopup.transform.Find("hyperlinkText")?.GetComponent<TextMeshProUGUI>();
 
         if (popupTitle != null) popupTitle.text = document.Title;
         if (popupComment != null) popupComment.text = document.Comments;
@@ -364,16 +373,17 @@ public class DynamicScrollView : MonoBehaviour
         }
 
         // Find and set up the close button ("X")
-        Button closeButton = popup.transform.Find("CloseButton")?.GetComponent<Button>();
+        Button closeButton = currentPopup.transform.Find("CloseButton")?.GetComponent<Button>();
         if (closeButton != null)
         {
-            closeButton.onClick.AddListener(() => ClosePopup(popup));
+            closeButton.onClick.AddListener(() => ClosePopup(currentPopup));
         }
         else
         {
             Debug.LogError("Close button (X) not found in popup prefab.");
         }
     }
+
 
 
 

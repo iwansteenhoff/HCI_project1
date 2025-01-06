@@ -73,31 +73,67 @@ public class HandleInput : MonoBehaviour
             Debug.Log("Input is empty or null.");
             return;
         }
-
+        Debug.Log(userInput);
         string processedInput = CleanInput(userInput);
         List<Pandemic> pandemics = pandemicDatabase.pandemics;
-
+        Debug.Log($"sdfsdf{processedInput}");
+        // Check for a match
         RemoveText();
 
         foreach (var name in pandemicnames)
         {
+
             if (name.Equals(processedInput, System.StringComparison.OrdinalIgnoreCase))
             {
-                Pandemic matchedPandemic = pandemics[pandemicnames.IndexOf(name)];
+                Pandemic matchedpandemic = pandemics[pandemicnames.IndexOf(name)];
+                selectedPandemicName = matchedpandemic.Event;
+                Debug.Log($"Match found: {matchedpandemic.Event}");
+                string[] years = matchedpandemic.Date.Split("-");
+                if (years.Length == 2)
+                {
+                    int firstyear = int.Parse(years[0]);
+                    int secondyear = int.Parse(years[1]);
+                    if (timelineSliderObject.value >= firstyear && timelineSliderObject.value <= secondyear)
+                    {
+                        RectTransform textRectTransform1 = pandemicInfoText.GetComponent<RectTransform>();
+                        {
+                            // Adjust the y-coordinate to move the text box higher
+                            textRectTransform1.anchoredPosition = new Vector2(3, -170);
+                        }
+                        pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
+                        virusImageController.SetVirusImage(matchedpandemic.Pathogen);
+                        dynamicScrollView.UpdateScrollViewForEpidemic(selectedPandemicName);
+                        return;
+                    }
+                }
 
-                // Correct placement of the line
-                selectedPandemicName = matchedPandemic.Event; // Store the selected pandemic name
-                Debug.Log($"Match found: {selectedPandemicName}");
+                int thirdyear = int.Parse(years[0]);
+                if (timelineSliderObject.value == thirdyear)
+                {
+                    RectTransform textRectTransform2 = pandemicInfoText.GetComponent<RectTransform>();
+                    {
+                        // Adjust the y-coordinate to move the text box higher
+                        textRectTransform2.anchoredPosition = new Vector2(3, -170);
+                    }
+                    pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
+                    virusImageController.SetVirusImage(matchedpandemic.Pathogen);
+                    dynamicScrollView.UpdateScrollViewForEpidemic(selectedPandemicName);
+                    return;
+                }
 
-                // Display information about the pandemic
-                pandemicInfoText.text = FormatPandemicInfo(matchedPandemic);
-                virusImageController.SetVirusImage(matchedPandemic.Pathogen);
+                timelineSlider.SetSliderToYear(thirdyear);
+                RectTransform textRectTransform3 = pandemicInfoText.GetComponent<RectTransform>();
+                {
+                    // Adjust the y-coordinate to move the text box higher
+                    textRectTransform3.anchoredPosition = new Vector2(3, -170);
+                }
+                pandemicInfoText.text = FormatPandemicInfo(matchedpandemic);
+                virusImageController.SetVirusImage(matchedpandemic.Pathogen);
                 dynamicScrollView.UpdateScrollViewForEpidemic(selectedPandemicName);
-                return;
+
+                return; // Exit after finding the first match
             }
         }
-
-        Debug.Log("No match found for the input.");
     }
     public void RemoveText()
     {
