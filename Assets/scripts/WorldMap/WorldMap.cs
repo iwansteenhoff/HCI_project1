@@ -27,6 +27,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     private float year;
     public UnityEngine.UI.Slider timelineSlider;
     public HandleInput handleInput;
+    public DynamicScrollView dynamicScrollView;
 
 
     ///<summary>
@@ -211,6 +212,7 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         }
         handleInput.RemoveText();
         selectedPandemics.Clear();
+        dynamicScrollView.DepopulateScrollView();
 
 
 
@@ -257,7 +259,8 @@ public class WorldMap : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         countryT.GetComponent<SpriteRenderer>().color = mapStyleController.DefaultColorForSelectedCountries;
         handleInput.RemoveText();
         handleInput.SetTextToSelectedCountry(country.ToString());
-        
+        dynamicScrollView.DepopulateScrollView();
+
     }
     ///<summary>
     /// Unselect Country

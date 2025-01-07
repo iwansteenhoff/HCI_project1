@@ -8,18 +8,21 @@ public class OpenLink : MonoBehaviour
     public void SetDocumentSource(string source)
     {
         documentSource = source;
+        Debug.Log($"SetDocumentSource called on instance: {this.GetInstanceID()} with source: {source}");
     }
 
-    // This function will be called when the hyperlink button is clicked
     public void OpenUrl()
     {
+        Debug.Log($"OpenUrl called on instance: {this.GetInstanceID()} with documentSource: {documentSource}");
         if (!string.IsNullOrEmpty(documentSource))
         {
             Application.OpenURL(documentSource);
+            Debug.Log("we entered");
         }
         else
         {
             Debug.LogError("Document source is empty or null.");
         }
     }
+
 }

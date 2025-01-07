@@ -57,7 +57,6 @@ public class DynamicScrollView : MonoBehaviour
         PopulateScrollView();
         UpdateScrollButtonVisibility();
     }
-
     public void UpdateScrollViewForEpidemic(string epidemicName)
     {
         Debug.Log("Updating Scroll View for Epidemic: " + epidemicName);
@@ -190,6 +189,15 @@ public class DynamicScrollView : MonoBehaviour
         }
     }
 
+    public void DepopulateScrollView()
+    {
+        Debug.Log("Clearing existing buttons...");
+        foreach (Transform child in contentTransform)
+        {
+            Destroy(child.gameObject);
+        }
+        Debug.Log("Existing buttons cleared.");
+    }
     void PopulateScrollView()
     {
         // Clear existing buttons
@@ -351,7 +359,8 @@ public class DynamicScrollView : MonoBehaviour
         // Set the metadata in the popup (like title, comment, hyperlink, etc.)
         TextMeshProUGUI popupTitle = currentPopup.transform.Find("popupTitle")?.GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI popupComment = currentPopup.transform.Find("popupComment")?.GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI hyperlinkText = currentPopup.transform.Find("hyperlinkText")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI hyperlinkText = currentPopup.transform.Find("hyperlinkButton/hyperlinkText")?.GetComponent<TextMeshProUGUI>();
+
 
         if (popupTitle != null) popupTitle.text = document.Title;
         if (popupComment != null) popupComment.text = document.Comments;
@@ -364,12 +373,17 @@ public class DynamicScrollView : MonoBehaviour
             OpenLink openLinkScript = hyperlinkText.GetComponentInParent<OpenLink>();
             if (openLinkScript != null)
             {
+                Debug.Log("enter link stuff");
                 openLinkScript.SetDocumentSource(document.DocumentSource); // Pass the URL to OpenLink
             }
             else
             {
                 Debug.LogError("OpenLink script not found on hyperlink button.");
             }
+        }
+        else
+        {
+            Debug.Log("hyperLinkText is null");
         }
 
         // Find and set up the close button ("X")
